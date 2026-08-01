@@ -73,7 +73,8 @@ public class StudentService {
     public Student getStudentById(int id) {
         return studentRepository.findById(id)
                 .orElseThrow(() ->
-                        new StudentNotFoundException("Student with ID " + id + " not found"));
+                                 new //RuntimeException("Test"));
+                                         StudentNotFoundException("Student with ID " + id + " not found"));
     }
 
     public College getCollegeById(int id) {
