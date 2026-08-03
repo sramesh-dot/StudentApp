@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class StudentService {
 
@@ -71,10 +74,15 @@ public class StudentService {
     }
 
     public Student getStudentById(int id) {
+
+        logger.info("Fetching student with ID {}", id);
+
         return studentRepository.findById(id)
-                .orElseThrow(() ->
-                                 new //RuntimeException("Test"));
-                                         StudentNotFoundException("Student with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Student not found with ID {}", id);
+                    return new //RuntimeException("Test"));
+                            StudentNotFoundException("Student with ID " + id + " not found");
+                });
     }
 
     public College getCollegeById(int id) {
@@ -194,4 +202,9 @@ public class StudentService {
 
         studentRepository.save(student);
     }
+
+    //SLF4J API - Logback - Logger
+    //Create a Logger
+    private static final Logger logger = LoggerFactory.getLogger(
+            StudentService.class);
 }

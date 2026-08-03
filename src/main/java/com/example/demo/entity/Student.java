@@ -5,6 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Student {
@@ -12,8 +15,11 @@ public class Student {
     @Id
     private int id;
 
+    @NotBlank(message = "Name cannot be blank")
     private String name;
 
+    @Min(value = 18, message = "Age must be at least 18")
+    @Max(value = 60, message = "Age cannot exceed 60")
     private int age;
 
     public Student() {
