@@ -79,7 +79,7 @@ public class StudentService {
 
         return studentRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.warn("Student not found with ID {}", id);
+                        logger.warn("Student not found with ID {}", id);
                     return new //RuntimeException("Test"));
                             StudentNotFoundException("Student with ID " + id + " not found");
                 });
