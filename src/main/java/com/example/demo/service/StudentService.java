@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class StudentService {
 
@@ -58,23 +61,32 @@ public class StudentService {
     }
 
     public Student saveStudent(Student student) {
-        return studentRepository.save(student);
+        logger.info("Saving student: {}", student.getName());
+        Student savedStudent = studentRepository.save(student);
+        logger.info("Student saved with ID: {}", savedStudent.getId());
+        return savedStudent;
     }
 
     public College saveCollege(College college) {
         return collegeRepository.save(college);
     }
 
-
     public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+        logger.info("Fetching All Students");
+        List<Student> studentList = studentRepository.findAll();
+        logger.info("Fetched {} students", studentList.size());
+        return studentList;
     }
 
     public Student getStudentById(int id) {
+        logger.debug("Fetching student with ID {}", id);
         return studentRepository.findById(id)
-                .orElseThrow(() ->
-                                 new //RuntimeException("Test"));
-                                         StudentNotFoundException("Student with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Student not found with ID {}", id);
+                    return new StudentNotFoundException(
+                            "Student with ID " + id + " not found"
+                    );
+                });
     }
 
     public College getCollegeById(int id) {
@@ -84,12 +96,17 @@ public class StudentService {
     }
 
     public void deleteStudent(int id) {
+        logger.info("Trying to delete student with ID {}", id);
         studentRepository.deleteById(id);
+        logger.info("Student with ID {} Deleted", id);
     }
 
     public Student updateStudent(int id, Student student) {
+        logger.debug("Trying to update student to ID {}", id);
         student.setId(id);
-        return studentRepository.save(student);
+        Student updatedStudent = studentRepository.save(student);
+        logger.info("Student with ID {} updated successfully", id);
+        return updatedStudent;
     }
 
     public List<Student> getStudentsByName(String name) {
@@ -153,18 +170,14 @@ public class StudentService {
 
     //Spring Data JPA Pagination
     public Page<Student> getStudents(int page, int size) {
-
         Pageable pageable = PageRequest.of(page, size);
-
         return studentRepository.findAll(pageable);
     }
 
     //Sorting
     public List<Student> getStudentsSorted() {
-
         return studentRepository.findAll(
                 Sort.by("age").descending());
-
     }
 
     //Pagination & Sorting Together
@@ -194,4 +207,9 @@ public class StudentService {
 
         studentRepository.save(student);
     }
+
+    //SLF4J API - Logback - Logger
+    //Create a Logger
+    private static final Logger logger = LoggerFactory.getLogger(
+            StudentService.class);
 }

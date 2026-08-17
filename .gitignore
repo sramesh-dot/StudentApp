@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Stop tracking in Git ###
+*.log
+logs/
+
