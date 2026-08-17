@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.StudentResponseDTO;
 import com.example.demo.entity.Student;
 import com.example.demo.service.StudentService;
 import jakarta.validation.Valid;
@@ -114,7 +115,7 @@ public class StudentController {
 
     //Spring Data JPA Pagination
     @GetMapping("/page")
-    public Page<Student> getStudents(
+    public Page<StudentResponseDTO> getStudents(
             @RequestParam int page,
             @RequestParam int size) {
 
