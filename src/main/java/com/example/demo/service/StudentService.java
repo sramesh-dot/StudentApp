@@ -1,10 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.config.ConfigurationProperties;
+import com.example.demo.dto.StudentRequestDTO;
+import com.example.demo.dto.StudentResponseDTO;
 import com.example.demo.entity.College;
 import com.example.demo.entity.Student;
 import com.example.demo.exception.CollegeNotFoundException;
 import com.example.demo.exception.StudentNotFoundException;
+import com.example.demo.mapper.StudentMapper;
 import com.example.demo.repository.CollegeRepository;
 import com.example.demo.repository.StudentRepository;
 import jakarta.annotation.PostConstruct;
@@ -169,9 +172,10 @@ public class StudentService {
 
 
     //Spring Data JPA Pagination
-    public Page<Student> getStudents(int page, int size) {
+    public Page<StudentResponseDTO> getStudents(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return studentRepository.findAll(pageable);
+        Page<Student> students = studentRepository.findAll(pageable);
+        return students.map(StudentMapper::toResponse);
     }
 
     //Sorting
