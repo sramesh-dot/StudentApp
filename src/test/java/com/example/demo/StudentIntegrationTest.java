@@ -11,12 +11,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 
 @SpringBootTest
+@Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class StudentIntegrationTest {
+
+    @Container
+    @ServiceConnection
+    static MySQLContainer<?> mysql =
+            new MySQLContainer<>("mysql:8.0");
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,4 +54,6 @@ class StudentIntegrationTest {
                 .andExpect(jsonPath("$.name")
                         .value("Ramesh"));
     }
+
+
 }
