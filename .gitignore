@@ -35,4 +35,4 @@ build/
 ### Stop tracking in Git ###
 *.log
 logs/
-
+.env
