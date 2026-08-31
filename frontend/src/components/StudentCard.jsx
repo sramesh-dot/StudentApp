@@ -1,9 +1,10 @@
 function StudentCard({ student, onDelete }) {
     return (
         <div>
-            <h2>{student.name}</h2>
+            <p>{student.id}</p>
+            <p>{student.name}</p>
             <p>Age: {student.age}</p>
-            <p>Percentage: {student.percentage}</p>
+            {/* <p>Percentage: {student.percentage}</p> */}
 
             <button onClick = {() => onDelete(student.id)}>
                 Delete

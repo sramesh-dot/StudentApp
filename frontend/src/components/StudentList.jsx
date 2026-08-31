@@ -1,6 +1,6 @@
 import StudentCard from "./StudentCard";
 
-function StudentList({ students, onDelete, onClear }) {
+function StudentList({ students, onDelete }) {
 
     return (
         <div>
@@ -10,11 +10,7 @@ function StudentList({ students, onDelete, onClear }) {
                     student={student}
                     onDelete={onDelete}
                 />
-            ))}
-            <button onClick = {() => onClear()}>
-                Clear All Students
-            </button>
-           
+            ))}           
         </div>
     );
 }

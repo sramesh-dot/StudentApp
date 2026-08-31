@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 import StudentCard from "./components/StudentCard";
@@ -6,53 +6,54 @@ import StudentList from "./components/StudentList";
 
 function App() {
 
-    const [students, setStudents] = useState([
-        {
-            id: 1,
-            name: "Ramesh",
-            age: 22,
-            percentage: 82
-        },
-        {
-            id: 2,
-            name: "Arun",
-            age: 21,
-            percentage: 75
-        },
-        {
-            id: 3,
-            name: "Kumar",
-            age: 23,
-            percentage: 91
-        }
-    ]);
+    // const [students, setStudents] = useState([
+    //     {
+    //         id: 1,
+    //         name: "Ramesh",
+    //         age: 22,
+    //         percentage: 82
+    //     },
+    //     {
+    //         id: 2,
+    //         name: "Arun",
+    //         age: 21,
+    //         percentage: 75
+    //     },
+    //     {
+    //         id: 3,
+    //         name: "Kumar",
+    //         age: 23,
+    //         percentage: 91
+    //     }
+    // ]);
 
     const [name, setName] = useState("");
     const [age, setAge] = useState("");
-    const [percentage, setPercentage] = useState("");
+    const [id, setId] = useState("");
 
     function handleSubmit(event) {
         event.preventDefault();
         const newStudent = {
-            id: Date.now(),
+            // id: Date.now(),
             name: name,
             age: Number(age),
-            percentage: Number(percentage)
+            id: Number(id)
         };
-        setStudents([...students, newStudent]);
+        // setStudents([...students, newStudent]);
+        handleAddStudent(newStudent);
         setName("");
         setAge("");
-        setPercentage("");
+        setId("");
     }
 
-    function handleDelete(id) {
-        setStudents(
-            students.filter(student => student.id !== id));
-    }
+    // function handleDelete(id) {
+    //     setStudents(
+    //         students.filter(student => student.id !== id));
+    // }
 
-    function handleClearAll() {
-        setStudents([]);
-    }
+    // function handleClearAll() {
+    //     setStudents([]);
+    // }
     // function addStudent() {
     //     const newStudent = {
     //         id: 4,
@@ -69,11 +70,137 @@ function App() {
     //             student.id !== 3)
     //         );
     // }
+    // const [count, setCount] = useState(0);
+
+    // useEffect(() =>{
+    //     console.log("Count changed:", count);   
+    // })
+
+//Get method
+    const [students,setStudents] = useState([]);
+    useEffect(() => {
+
+    fetch("http://localhost:8080/students", {
+        method: "GET",
+        headers: {
+            "Authorization": "Basic " + btoa("admin:admin123"),
+            "Content-Type": "application/json"
+
+        }
+    })
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch students");
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            setStudents(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+}, []);
+
+//Post method
+const handleAddStudent = async (student) => {
+
+    const response = await fetch(
+        "http://localhost:8080/students",
+        {
+            method: "POST",
+            headers: {
+                "Authorization": "Basic " + btoa("admin:admin123"),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(student)
+        }
+    );
+
+    const savedStudent = await response.json();
+
+    setStudents(previousStudents => [
+        ...previousStudents,
+        savedStudent
+    ]);
+};
+
+//Delete method
+const handleDelete = async (id) => {
+    await fetch(`http://localhost:8080/students/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Basic " + btoa("admin:admin123"),
+        }
+    });
+
+    setStudents(prev => prev.filter(student => student.id !== id));
+};
+
+//Put method
+const handleUpdate = async () => {
+
+    const student = {
+        id: Number(id),
+        name: name,
+        age: Number(age)
+    };
+
+    const response = await fetch(
+        `http://localhost:8080/students/${id}`,
+        {
+            method: "PUT",
+            headers: {
+                "Authorization": "Basic " + btoa("admin:admin123"),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(student)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to update student");
+    }
+
+    const updatedStudent = await response.json();
+
+    setStudents(prev =>
+        prev.map(s =>
+            s.id === updatedStudent.id
+                ? updatedStudent
+                : s
+        )
+    );
+
+    setName("");
+    setAge("");
+    setId("");
+};
     return (
         <div>
             <h1>StudentApp</h1>
+            {/* <h1>{count}</h1>
+            <button onClick={() => setCount(count+1)}>
+                Increase
+            </button> */}
 
             <form onSubmit={handleSubmit}>
+                
+                <div>
+                    <label>ID:</label>
+                <input
+                    type="text"
+                    placeholder='Enter ID'
+                    value={id}
+                    onChange={(event)=>
+                        setId(event.target.value)
+                    }
+                />
+                </div>
+
                 <div>
                     <label>Name:</label>
                 <input
@@ -98,21 +225,14 @@ function App() {
                 />
                 </div>
 
-
-                <div>
-                    <label>Percentage:</label>
-                <input
-                    type="text"
-                    placeholder='Enter percentage'
-                    value={percentage}
-                    onChange={(event)=>
-                        setPercentage(event.target.value)
-                    }
-                />
-                </div>
-
                 <button type="submit">
                     Add Student
+                </button>
+
+                <button 
+                    type="button"
+                    onClick={handleUpdate}>
+                    Update
                 </button>
                 
 
@@ -125,7 +245,7 @@ function App() {
             <StudentList
                  students={students}
                  onDelete={handleDelete}
-                 onClear={handleClearAll}/>
+                 />
 
              {/* <button onClick={removeStudent}>
                 Remove Student
